@@ -12,18 +12,16 @@
         MathJax.Hub.Config({
         displayAlign: "left",
         showMathMenu: false})</script>
-        <script src="html2canvas.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.debug.js"></script>
         <script src="index.js"></script>
         <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
         <link rel="stylesheet" href="index.css">
     </head>
     <body>
-        <div id="input" class="container">
-            <form >
+        <div id="input">
+            <form autocomplete="off">
                 <fieldset form="input" class="form-group">
                 <legend class="control-label">Design procedure:
-                    <select id="main-selector" class="form-control" required>
+                    <select id="main-selector" class="form-control">
                         <option value="Tension" selected>Tension member</option>
                         <option value="Compression">Compression member</option>
                     </select>
@@ -31,20 +29,20 @@
                     <div class="form-group row">
                         <label class="col-xs-3 control-label fix-label" for="df">Design force(ton):</label>
                         <div class="col-xs-2">
-                        <input class="form-control" type="text" id="df" required>
+                        <input class="form-control validate" type="text" id="df">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label id="grade-label" class="col-xs-3 control-label fix-label" for="steel-grade">Steel grade:</label>
                         <div class="col-xs-3">
-                        <select class="form-control" id="steel-grade" required>
+                        <select class="form-control" id="steel-grade">
                             <option value="37" selected>St. 37</option>
                             <option value="44">St. 44</option>
                             <option value="52">St. 52</option>
                         </select>
                         </div>
                     </div>
-                    <div class="form-group" id="connection">
+                    <div class="form-group form-inline" id="connection">
                         <label class="control-label radio-margin">Connection:</label>
                         <input type="radio" id="welded" value="welded" name="connection-radio" checked="checked">
                         <label class="radio-margin" for="welded">Welded</label>
@@ -54,7 +52,7 @@
                     <div class="form-group row">
                     <label id="shape-label" class="control-label col-xs-3 fix-label" for="member-shape">Member shape:</label>
                         <div class="col-xs-3">
-                        <select class="form-control" id="member-shape" required>
+                        <select class="form-control" id="member-shape">
                             <option value="one angle">one angle</option>
                             <option value="two angle">two angles</option>
                             <option value="star">star</option>
@@ -71,19 +69,20 @@
                     <div class="form-group row">
                         <label class="col-xs-1 control-label fix-label ls-margin" for="lx">Lx(m):</label>
                         <div class="col-xs-2">
-                        <input class="form-control" type="text" id="lx" required>
+                        <input class="form-control validate" type="text" id="lx">
                         </div>
                         <label class="col-xs-1 control-label fix-label ls-margin" for="ly">Ly(m):</label>
                         <div class="col-xs-2">
-                        <input class="form-control" type="text" id="ly" required>
+                        <input class="form-control validate" type="text" id="ly">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label id="g-label" class="col-xs-4 control-label" for="tg">Gusset thickness(cm):</label>
                         <div class="col-xs-2">
-                        <input class="form-control" type="text" id="tg" required>
+                        <input class="form-control validate" type="text" id="tg">
                         </div>
                     </div>
+                    <button type="button" class="btn btn-default" id="btn-solve">Solve</button>
                 </fieldset>
             </form> 
             </div>
@@ -106,12 +105,9 @@
                 \[\frac{1}{x+2v}\]
             </div>
         </div>
-        <div id="btn">
-        <button id="btnSave" class="btn btn-default">Download as PDF</button>
-        </div>
         <div id="about">
             <h2>About</h2>
-            <p>Created as a CS50x final project, steelDesign is based on the Egyptian code of practice for steel structures design (AM2011) and M.U.S.T's (Misr university for science and technology) CE403 course, it aims to help students solve problem sets by providing a step-by-step solutions to several structural steel design problems, it's intended for academic use only.</p>
+            <p>Created as a CS50x final project, steelDesign is based on the Egyptian code of practice for steel structures design (AM2011) and M.U.S.T's (Misr university for science and technology) CE403 course, it aims to help students solve problem sets by providing step-by-step solutions to several structural steel design problems, intended for academic use only.</p>
         </div>
     </body>
 </html>

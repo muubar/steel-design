@@ -3,6 +3,7 @@ body {
 }
 
 fieldset { 
+    display: block;
     width: 600px;
     margin: 15px auto;
     border: 2px solid #455568;
@@ -11,6 +12,13 @@ fieldset {
     background-color: #aeb3ba;
     font-family: sans-serif, arial;
     font-size: 1em;
+}
+
+select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance:none;
+    background: url('https://www.foretennis.com/images/arrow-d.png') no-repeat right #FEFEFE !important;
 }
 
 #about {
@@ -41,18 +49,25 @@ legend, #solution-head {
     margin: 0 auto;
     padding: 1.0em 1.4em 1.4em 1.4em;
     background: #86909e;
-    font-family: sans-serif, arial;
-    
+    font-family: sans-serif, arial;    
 }
 
-#btn {
-    width: 130px;
-    margin: 15px auto 50px auto;
+#main-selector {
+    width: 200px;
 }
 
-#btnSave {
-    height: 40px;
+#bolt {
+    width: 70px;
+    margin-left: 5px;
 }
+
+#btn-solve {
+    font-weight: bold;
+    display: block;
+    width: 80px;
+    margin: 0 auto;
+}
+
 
 #bolt-label {
     margin-left: 2%
