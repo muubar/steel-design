@@ -1,0 +1,86 @@
+body {
+    background-color: #f1f2f6;
+}
+
+fieldset { 
+    width: 600px;
+    margin: 15px auto;
+    border: 2px solid #455568;
+    padding: 0 1.4em 1.4em 1.4em;  
+    border-radius: 5px;
+    background-color: #aeb3ba;
+    font-family: sans-serif, arial;
+    font-size: 1em;
+}
+
+#about {
+    display:block;
+    width: 600px;
+    margin: 15px auto;
+    border: 2px solid #455568;
+    border-radius: 5px;
+    background-color: #aeb3ba;
+    padding: 0 1.4em 1.4em 1.4em;
+    font-family: lato,arial;
+    font-weight: bold;
+}
+
+legend, #solution-head {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    width: auto;
+    border-bottom: none;
+}
+
+#solution {
+    display: block;
+    border: 2px solid #455568;
+    border-radius: 5px;
+    width: 600px;
+    margin: 0 auto;
+    padding: 1.0em 1.4em 1.4em 1.4em;
+    background: #86909e;
+    font-family: sans-serif, arial;
+    
+}
+
+#btn {
+    width: 130px;
+    margin: 15px auto 50px auto;
+}
+
+#btnSave {
+    height: 40px;
+}
+
+#bolt-label {
+    margin-left: 2%
+}
+
+#g-label {
+    margin-top: 8px;
+    margin-right: -5%
+}
+
+.fix-label {
+    width: 160px;
+    margin-top: 8px;
+    margin-right: -4%
+}
+
+.ls-margin {
+    margin-right: -18%
+}
+
+.radio-margin {
+    margin-right: 10px;
+}
+
+#grade-label {
+    margin-right: -11%
+}
+
+#shape-label {
+    margin-right: -7%
+}
