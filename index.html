@@ -10,6 +10,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
         <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$']]},
+        CommonHTML: { scale: 130 },
         displayAlign: "left",
         showMathMenu: false})</script>
         <script src="index.js"></script>
@@ -22,8 +24,8 @@
                 <fieldset form="input" class="form-group">
                 <legend class="control-label">Design procedure:
                     <select id="main-selector" class="form-control">
-                        <option value="Tension" selected>Tension member</option>
-                        <option value="Compression">Compression member</option>
+                        <option value="tension" selected>Tension member</option>
+                        <option value="compression">Compression member</option>
                     </select>
                 </legend>
                     <div class="form-group row">
@@ -42,12 +44,14 @@
                         </select>
                         </div>
                     </div>
-                    <div class="form-group form-inline" id="connection">
-                        <label class="control-label radio-margin">Connection:</label>
+                    <div class="form-group row" id="connection">
+                        <div class="col-xs-6">
+                        <label class="control-label">Connection:</label>
                         <input type="radio" id="welded" value="welded" name="connection-radio" checked="checked">
                         <label class="radio-margin" for="welded">Welded</label>
                         <input type="radio" id="bolted" value="bolted" name="connection-radio">
                         <label for="bolted">Bolted</label>
+                        </div>
                     </div>
                     <div class="form-group row">
                     <label id="shape-label" class="control-label col-xs-3 fix-label" for="member-shape">Member shape:</label>
@@ -89,20 +93,6 @@
         <div id="solution">
             <p id="solution-head">Solution:</p>
             <div id="solution-text">
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                <p>so it's:</p>
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2y}\]
-                \[\frac{1}{x+2v}\]
             </div>
         </div>
         <div id="about">

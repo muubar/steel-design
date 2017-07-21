@@ -57,8 +57,9 @@ legend, #solution-head {
 }
 
 #bolt {
+    margin-top: -4%;
+    margin-left: -4%;
     width: 70px;
-    margin-left: 5px;
 }
 
 #btn-solve {
@@ -68,9 +69,13 @@ legend, #solution-head {
     margin: 0 auto;
 }
 
-
 #bolt-label {
-    margin-left: 2%
+    margin-top: 0.4%;
+    margin-left : -7%;
+}
+
+#solution-text div {
+    margin: 20px auto;
 }
 
 #g-label {
