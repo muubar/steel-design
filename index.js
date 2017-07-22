@@ -294,8 +294,24 @@ function tension(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
     }
     
     $("#solution-text").append(math);
-    MathJax.Hub.Typeset();
     
+    if(connection === "bolted") {
+        $("#solution-text").append("<div>${3} - Construction:$</div>");
+        math = "<div>$a-t \\geqslant \\phi$</div><div>$" + parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 + "-" + parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10 + "\\geqslant" + bolts + "\\rightarrow "
+        if ( (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= parseFloat(bolts)) { math += "O.K.$<div>"}
+        else {
+            while ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) < parseFloat(bolts)) {
+            var rsec = refind(aPrimary);
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            math = "<div>$a-t \\geqslant \\phi$</div><div>$" + parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 + "-" + parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10 + "\\geqslant" + bolts + "\\rightarrow "
+            if ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= parseFloat(bolts)) { math+= "O.K.$</div>"; }
+        }    
+        }
+    }
+    $("#solution-text").append(math);
+    MathJax.Hub.Typeset();
 }
 
 function findSection(a) {
