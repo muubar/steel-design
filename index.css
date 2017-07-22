@@ -28,7 +28,7 @@ select {
     border: 2px solid #455568;
     border-radius: 5px;
     background-color: #aeb3ba;
-    padding: 0 1.4em 1.4em 1.4em;
+    padding: 0 1.4em 0.5em 1.4em;
     font-family: lato,arial;
     font-weight: bold;
 }
@@ -76,6 +76,19 @@ legend, #solution-head {
 
 #solution-text div {
     margin: 20px auto;
+}
+
+#footer {
+    width: 50%;
+    margin: 5% auto 0 auto;
+}
+
+#footer img {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 2%;
+    margin-right: 1%;
 }
 
 #g-label {
