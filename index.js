@@ -101,7 +101,7 @@ $(document).ready(function () {
                 return null;
             }
         });
-        if ($("#main-selector").val() === "tension" && check) {
+        if (check) {
             $("#solution-text").empty();
             var c, b, v
             if ($("#welded").prop("checked")) { c = "welded"; }
@@ -109,10 +109,15 @@ $(document).ready(function () {
             if ($("#case1").prop("checked")) { v = "1"; }
             else { v = "2"; }
                 
+            if ($("#main-selector").val() === "tension") {
             tension($("#df").val(), $("#steel-grade").val(), c, b, $("#member-shape").val(), v, $("#lx").val(), $("#ly").val(), $("#tg").val());
-        }
+            }
+            else if ($("#main-selector").val() === "compression") {
+                compression($("#df").val(), $("#steel-grade").val(), c, b, $("#member-shape").val(), v, $("#lx").val(), $("#ly").val(), $("#tg").val());
+            }
+            }
+        });
     });
-});
 
 function checkMe() {
     if (/^[+-]?\d+(\.\d+)?$/.test($("#" + this.id).val()) === false || $("#" + this.id).val() <= 0) {
@@ -196,6 +201,7 @@ function tension(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
     math = "<div>$A=" + primarySection.area + "\\hspace{0.2cm}cm^2,\\hspace{0.2cm}e=" + primarySection.e + "\\hspace{0.2cm}cm,\\hspace{0.2cm} I_{y}=" + primarySection.Iy + "\\hspace{0.2cm}cm^4, \\hspace{0.2cm}i_{x}=" + primarySection.ix + "\\hspace{0.2cm}cm$</div>" ;
     $("#solution-text").append(math);
     
+    if (shape !== "star") {//one angle and two angle first check
     $("#solution-text").append("<div>$\B-Exact\\hspace{0.2cm}design:-$</div><div>\\[\{1} - Stiffness:\\]</div>");
     math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + primarySection.ix + "}=" +((lx*100)/parseFloat(primarySection.ix)).toFixed(3) + "\\leqslant  300 \\hspace{0.5cm}";
     if ((lx*100)/parseFloat(primarySection.ix) <= 300) { math+= "O.K.$</div>"; }
@@ -225,6 +231,11 @@ function tension(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
             $("#solution-text").append(math);
             
             iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+            
+            math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + primarySection.ix + "}=" +((lx*100)/parseFloat(primarySection.ix)).toFixed(3) + "\\leqslant  300 \\hspace{0.5cm}";
+            if ((lx*100)/parseFloat(primarySection.ix) <= 300) { math+= "O.K.$</div>"; }
+            defx = (lx*100)/parseFloat(primarySection.ix);
+            $("#solution-text").append(math);
             math = "<div>$i_{y}=\\sqrt{\\frac{" + primarySection.Iy + "+" + primarySection.area + "(" + primarySection.e + "+\\frac{" + tg + "}{2})^2}{" + primarySection.area + "}}=" + iy + "\\hspace{0.2cm}cm$</div>";
     $("#solution-text").append(math);
             math = "<div>$\\lambda_{y}=\\frac{L_{y} \\times 100}{" + iy + "}=" +((ly*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  300 \\hspace{0.5cm}";
@@ -232,6 +243,51 @@ function tension(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
         } 
     }
     $("#solution-text").append(math);
+    }
+    else {//star shape first check
+     $("#solution-text").append("<div>$\B-Exact\\hspace{0.2cm}design:-$</div><div>\\[\{1} - Stiffness:\\]</div>");
+    var iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+    math = "<div>$i_{x}=i_{y}=\\sqrt{\\frac{I_{y}+A(e+\\frac{t_{g}}{2})^2}{A}}=\\sqrt{\\frac{" + primarySection.Iy + "+" + primarySection.area + "(" + primarySection.e + "+\\frac{" + tg + "}{2})^2}{" + primarySection.area + "}}=" + iy + "\\hspace{0.2cm}cm$</div>";
+    $("#solution-text").append(math);
+
+    math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + iy + "}=" +((lx*100)/parseFloat(primarySection.ix)).toFixed(3) + "\\leqslant  300 \\hspace{0.5cm}";
+    if ((lx*100)/parseFloat(iy) <= 300) { math+= "O.K.$</div>"; }
+    else { 
+        while ((lx*100)/parseFloat(iy) > 300) {
+            var rsec = refind(aPrimary); 
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            
+             iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+            math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + iy + "}=" +((lx*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  300 \\hspace{0.5cm}";
+            if ((lx*100)/parseFloat(iy) <= 300) { math+= "O.K.$</div>"; }
+        } 
+    } 
+     $("#solution-text").append(math);
+    
+    math = "<div>$\\lambda_{y}=\\frac{L_{y} \\times 100}{" + iy + "}=" +((ly*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  300 \\hspace{0.5cm}";
+    if ((ly*100)/parseFloat(iy) <= 300) { math+= "O.K.$</div>"; }
+    else { 
+        while ((ly*100)/parseFloat(iy) > 300) {
+            var rsec = refind(aPrimary);
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            
+            iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+            math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + iy + "}=" +((lx*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  300 \\hspace{0.5cm}";
+            if ((lx*100)/parseFloat(iy) <= 300) { math+= "O.K.$</div>"; }
+            defx = (lx*100)/parseFloat(primarySection.ix);
+            $("#solution-text").append(math);
+            math = "<div>$i_{y}=\\sqrt{\\frac{" + primarySection.Iy + "+" + primarySection.area + "(" + primarySection.e + "+\\frac{" + tg + "}{2})^2}{" + primarySection.area + "}}=" + iy + "\\hspace{0.2cm}cm$</div>";
+    $("#solution-text").append(math);
+            math = "<div>$\\lambda_{y}=\\frac{L_{y} \\times 100}{" + iy + "}=" +((ly*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  300 \\hspace{0.5cm}";
+            if ((ly*100)/parseFloat(iy) <= 300) { math+= "O.K.$</div>"; }
+        } 
+    }
+    $("#solution-text").append(math);   
+    }
     
     $("#solution-text").append("<div>${2} - Stress:$</div>");
     var aNet = 0;
@@ -282,7 +338,24 @@ function tension(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
             primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
             $("#solution-text").append(math);
             
+            if (connection === "bolted" && shape !== "one angle") {
             aNet = (2*(parseFloat(primarySection.area)-(parseFloat(bolts)+0.2)*parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+            }
+            else if (connection === "welded" && shape !== "one angle") {
+                aNet = 2*parseFloat(primarySection.area);
+            }
+            else if (connection === "bolted" && shape === "one angle") {
+            var a1 = ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)-(parseFloat(bolts)+0.2)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+            var a2 = (((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)-(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10))*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+            aNet = (parseFloat(a1) + (3*parseFloat(a1) / (3*parseFloat(a1) + parseFloat(a2))) * parseFloat(a2)).toFixed(3); 
+            }
+            else {
+            var a1 = ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+            
+            var a2 = (((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)-(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10))*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3); 
+            
+            aNet = (parseFloat(a1) + (3*parseFloat(a1) / (3*parseFloat(a1) + parseFloat(a2))) * parseFloat(a2)).toFixed(3);
+            }
             math = "<div>$";
             if (sg == 37) { math += "1.4"; }
             else if (sg == 44) { math += "1.6"; }
@@ -297,21 +370,274 @@ function tension(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
     
     if(connection === "bolted") {
         $("#solution-text").append("<div>${3} - Construction:$</div>");
-        math = "<div>$a-t \\geqslant \\phi$</div><div>$" + parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 + "-" + parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10 + "\\geqslant" + bolts + "\\rightarrow "
-        if ( (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= parseFloat(bolts)) { math += "O.K.$<div>"}
+        math = "<div>$a-t \\geqslant 3 \\times \\phi$</div><div>$" + parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 + "-" + parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10 + "\\geqslant" + "3 \\times " + bolts + "\\rightarrow "
+        if ( (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= 3*parseFloat(bolts)) { math += "O.K.$<div>"}
         else {
-            while ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) < parseFloat(bolts)) {
+            while ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) < 3*parseFloat(bolts)) {
             var rsec = refind(aPrimary);
             if (rsec === -1) { return -1; }
             primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
             $("#solution-text").append(math);
-            math = "<div>$a-t \\geqslant \\phi$</div><div>$" + parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 + "-" + parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10 + "\\geqslant" + bolts + "\\rightarrow "
-            if ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= parseFloat(bolts)) { math+= "O.K.$</div>"; }
+            math = "<div>$a-t \\geqslant \\phi$</div><div>$" + parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 + "-" + parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10 + "\\geqslant" + 3*bolts + "\\rightarrow "
+            if ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= 3*parseFloat(bolts)) { math+= "O.K.$</div>"; }
         }    
         }
     }
     $("#solution-text").append(math);
     MathJax.Hub.Typeset();
+}
+
+function compression(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
+    var math = "<div>$A \\geqslant \\frac{"
+    var value = ""
+    $("#solution-text").append("<div>$\A-Primary\\hspace{0.2cm}design:-$</div><div>\\[\{1} - Stress:\\]</div>");
+    math += "d.f.}{\\sigma_{c} \\times ";
+    if (ca == 2) { math += "1.2 \\times "; }
+    if (shape === "one angle") { math += "0.6} = \\frac{" + df + "}{"; value += df; }
+    else { math+= "2} = \\frac{" + df + "}{"; value += df; }
+    math += "0.6 \\times "; value += "/(0.6";
+    if (ca == 2) { math += "1.2 \\times "; value += "*1.2"; }
+    if (shape === "one angle") { math += "0.6} = "; value += "*0.6)"; }
+    else { math+= "2} = "; value += "*2)"; };
+    var aStress = eval(value).toFixed(3);
+    math += aStress + " \\hspace{0.2cm} cm^2$</div>";
+    $("#solution-text").append(math);
+    
+    $("#solution-text").append("<div>\\[\{2} - Stiffness:\\]</div>");
+    math = "<div>$a \\geqslant \\frac{L_{x} \\times 100}{";
+    value = lx*100;
+    if (shape === "one angle") { math += "0.2 \\times 180}="; value = value/(0.2*180); }
+    else if (shape === "two angle") { math+= "0.3 \\times 180}="; value = value/(0.3*180); }
+    else { math+= "0.385 \\times 180}="; value = value/(0.385*180); }
+    math += "\\frac{" + parseFloat(lx*100).toFixed(3) + "}{"
+    if (shape === "one angle") { math += "0.2 \\times 180}="; }
+    else if (shape === "two angle") { math+= "0.3 \\times 180}="; }
+    else { math+= "0.385 \\times 180}="; }
+    var aStiffness1 = value.toFixed(3);
+    math += aStiffness1 + "\\hspace{0.2cm} cm^2$</div>";
+    $("#solution-text").append(math);
+    
+    math = "<div>$a \\geqslant \\frac{L_{y} \\times 100}{";
+    value = ly*100;
+    if (shape === "one angle") { math += "0.2 \\times 180}="; value = value/(0.2*180); }
+    else if (shape === "two angle") { math+= "0.45 \\times 180}="; value = value/(0.45*180); }
+    else { math+= "0.385 \\times 180}="; value = value/(0.385*180); }
+    math += "\\frac{" + parseFloat(ly*100).toFixed(3) + "}{"
+    if (shape === "one angle") { math += "0.2 \\times 180}="; }
+    else if (shape === "two angle") { math+= "0.45 \\times 180}="; }
+    else { math+= "0.385 \\times 180}="; }
+    var aStiffness2 = value.toFixed(3);
+    math += aStiffness2 + "\\hspace{0.2cm} cm^2$</div>";
+    $("#solution-text").append(math);
+    
+    var aStiffness = parseFloat(aStiffness1) >= parseFloat(aStiffness2) ? parseFloat(aStiffness1):parseFloat(aStiffness2);
+    math = "<div>$\\therefore a=" + aStiffness + ",\\hspace{0.7cm}" ;
+    if (parseFloat(aStress) > parseFloat(aStiffness)) { math += "\\because" + aStress + " \\geqslant " + aStiffness + "\\rightarrow use \\hspace{0.2cm}"; var aPrimary = aStress;}
+    else { math += "\\because" + aStiffness + "\\geqslant " + aStress + "\\rightarrow use \\hspace{0.2cm}"; var aPrimary = aStiffness; }
+    var primarySection = findSection(aPrimary);
+    if ( primarySection === -1 ) { return -1; }
+    math += primarySection.angle + "$</div>";
+    $("#solution-text").append(math);
+    
+    math = "<div>$A=" + primarySection.area + "\\hspace{0.2cm}cm^2,\\hspace{0.2cm}e=" + primarySection.e + "\\hspace{0.2cm}cm,\\hspace{0.2cm} I_{y}=" + primarySection.Iy + "\\hspace{0.2cm}cm^4, \\hspace{0.2cm}i_{x}=" + primarySection.ix + "\\hspace{0.2cm}cm$</div>" ;
+    $("#solution-text").append(math);
+    
+    
+    if (shape !== "star") {//non star shape first check
+    $("#solution-text").append("<div>$\B-Exact\\hspace{0.2cm}design:-$</div><div>\\[\{1} - Stiffness:\\]</div>");
+    math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + primarySection.ix + "}=" +((lx*100)/parseFloat(primarySection.ix)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+    if ((lx*100)/parseFloat(primarySection.ix) <= 180) { math+= "O.K.$</div>"; }
+    else { 
+        while ((lx*100)/parseFloat(primarySection.ix) > 180) {
+            var rsec = refind(aPrimary); 
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + primarySection.ix + "}=" +((lx*100)/parseFloat(primarySection.ix)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+            if ((lx*100)/parseFloat(primarySection.ix) <= 180) { math+= "O.K.$</div>"; }
+        } 
+    } 
+        var defx = (lx*100)/parseFloat(primarySection.ix);
+     $("#solution-text").append(math);
+    
+    var iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+    math = "<div>$i_{y}=\\sqrt{\\frac{I_{y}+A(e+\\frac{t_{g}}{2})^2}{A}}=\\sqrt{\\frac{" + primarySection.Iy + "+" + primarySection.area + "(" + primarySection.e + "+\\frac{" + tg + "}{2})^2}{" + primarySection.area + "}}=" + iy + "\\hspace{0.2cm}cm$</div>";
+    $("#solution-text").append(math);
+    
+        math = "<div>$\\lambda_{y}=\\frac{L_{y} \\times 100}{" + iy + "}=" +((ly*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+    if ((ly*100)/parseFloat(iy) <= 180) { math+= "O.K.$</div>"; }
+    else { 
+        while ((ly*100)/parseFloat(iy) > 180) {
+            var rsec = refind(aPrimary);
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            
+            iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+            math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + primarySection.ix + "}=" +((lx*100)/parseFloat(primarySection.ix)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+            if ((lx*100)/parseFloat(primarySection.ix) <= 180) { math+= "O.K.$</div>"; }
+            defx = (lx*100)/parseFloat(primarySection.ix);
+            $("#solution-text").append(math);
+            math = "<div>$i_{y}=\\sqrt{\\frac{" + primarySection.Iy + "+" + primarySection.area + "(" + primarySection.e + "+\\frac{" + tg + "}{2})^2}{" + primarySection.area + "}}=" + iy + "\\hspace{0.2cm}cm$</div>";
+    $("#solution-text").append(math);
+            math = "<div>$\\lambda_{y}=\\frac{L_{y} \\times 100}{" + iy + "}=" +((ly*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+            if ((ly*100)/parseFloat(iy) <= 180) { math+= "O.K.$</div>"; }
+        } 
+    }
+    $("#solution-text").append(math);
+        var defy = (ly*100)/parseFloat(iy);
+    }
+    else {//star shape first check
+     $("#solution-text").append("<div>$\B-Exact\\hspace{0.2cm}design:-$</div><div>\\[\{1} - Stiffness:\\]</div>");
+    var iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+    math = "<div>$i_{x}=i_{y}=\\sqrt{\\frac{I_{y}+A(e+\\frac{t_{g}}{2})^2}{A}}=\\sqrt{\\frac{" + primarySection.Iy + "+" + primarySection.area + "(" + primarySection.e + "+\\frac{" + tg + "}{2})^2}{" + primarySection.area + "}}=" + iy + "\\hspace{0.2cm}cm$</div>";
+    $("#solution-text").append(math);
+
+    math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + iy + "}=" +((lx*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+    if ((lx*100)/parseFloat(iy) <= 180) { math+= "O.K.$</div>"; }
+    else { 
+        while ((lx*100)/parseFloat(iy) > 180) {
+            var rsec = refind(aPrimary); 
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            
+             iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+            math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + iy + "}=" +((lx*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+            if ((lx*100)/parseFloat(iy) <= 180) { math+= "O.K.$</div>"; }
+        } 
+    }
+        var defx = (lx*100)/parseFloat(iy);
+     $("#solution-text").append(math);
+    
+    math = "<div>$\\lambda_{y}=\\frac{L_{y} \\times 100}{" + iy + "}=" +((ly*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+    if ((ly*100)/parseFloat(iy) <= 180) { math+= "O.K.$</div>"; }
+    else { 
+        while ((ly*100)/parseFloat(iy) > 180) {
+            var rsec = refind(aPrimary);
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            
+            iy = (Math.sqrt((parseFloat(primarySection.Iy)+parseFloat(primarySection.area)*Math.pow(parseFloat(primarySection.e) + (parseFloat(tg)/2), 2))/parseFloat(primarySection.area))).toFixed(3);
+            math = "<div>$\\lambda_{x}=\\frac{L_{x} \\times 100}{" + iy + "}=" +((lx*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+            if ((lx*100)/parseFloat(iy) <= 180) { math+= "O.K.$</div>"; }
+            defx = (lx*100)/parseFloat(primarySection.ix);
+            $("#solution-text").append(math);
+            math = "<div>$i_{y}=\\sqrt{\\frac{" + primarySection.Iy + "+" + primarySection.area + "(" + primarySection.e + "+\\frac{" + tg + "}{2})^2}{" + primarySection.area + "}}=" + iy + "\\hspace{0.2cm}cm$</div>";
+    $("#solution-text").append(math);
+            math = "<div>$\\lambda_{y}=\\frac{L_{y} \\times 100}{" + iy + "}=" +((ly*100)/parseFloat(iy)).toFixed(3) + "\\leqslant  180 \\hspace{0.5cm}";
+            if ((ly*100)/parseFloat(iy) <= 180) { math+= "O.K.$</div>"; }
+        } 
+    }
+        var defy = (ly*100)/parseFloat(iy);
+    $("#solution-text").append(math);   
+    }
+    //sigmaC check stage
+    var defmax = parseFloat(defx) > parseFloat(defy) ? defx.toFixed(3):defy.toFixed(3);
+    var sigmac = 0;
+    if (defmax >= 100) {
+        sigmac = (7500/(Math.pow(parseFloat(defmax), 2))).toFixed(3);
+        math = "<div>$\\because \\lambda_{max}=" + defmax + "\\geqslant 100$</div><div>$\\therefore \\sigma_{c}=\\frac{7500}{\\lambda_{max}^2}=" + sigmac + "$</div>";
+    }
+    else {
+        math = "<div>$\\because \\lambda_{max}=" + defmax + "\\leqslant 100$</div>"
+        if(sg == 37) {
+            sigmac = (1.4-(0.000065*Math.pow(defmax, 2))).toFixed(3);
+            math += "<div>$\\therefore \\sigma_{c}\\hspace{0.2cm}st.37=1.4-6.5 \\times 10^{-5} \\ times \\lambda_{max}^{2}$</div><div>=$1.4-6.5 \\times 10^{-5} \\times " + (Math.pow(defmax,2)).toFixed(3) + "=" + sigmac + "$</div>";
+        }
+        else if(sg == 44) {
+            sigmac = (1.6-(0.000085*Math.pow(defmax, 2))).toFixed(3);
+            math += "<div>$\\therefore \\sigma_{c}\\hspace{0.2cm}st.44=1.6-8.5 \\times 10^{-5} \\ times \\lambda_{max}^{2}$</div><div>$=1.6-8.5 \\times 10^{-5} \\times " + (Math.pow(defmax,2)).toFixed(3) + "=" + sigmac + "$</div>";
+            
+        }
+        else { 
+              sigmac = (2.1-(0.000135*Math.pow(defmax, 2))).toFixed(3);
+              math += "<div>$\\therefore \\sigma_{c}\\hspace{0.2cm}st.52=2.1-13.5 \\times 10^{-5} \\ times \\lambda_{max}^{2}$</div><div>$=2.1-13.5 \\times 10^{-5} \\times " + (Math.pow(defmax,2)).toFixed(3) + "=" + sigmac + "$</div>";
+             }
+         
+    }
+    $("#solution-text").append(math);   
+    
+    $("#solution-text").append("<div>${2} - Stress:$</div>");
+    var aNet = 0;
+    if (shape === "one angle") {
+        if (connection === "welded") {
+        var a1 = ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+
+        var a2 = (((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)-(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10))*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3); 
+
+        aNet = (parseFloat(a1) + (3*parseFloat(a1) / (3*parseFloat(a1) + parseFloat(a2))) * parseFloat(a2)).toFixed(3);
+
+        math = "<div>$\\because connection\\hspace{0.2cm}is\\hspace{0.2cm}welded\\hspace{0.2cm}and\\hspace{0.2cm}shape\\hspace{0.2cm}is\\hspace{0.2cm}one\\hspace{0.2cm}angle$</div><div>$ \\therefore A_{net}=A_{1}+(\\frac{3\\times A_{1}}{3 \\times A_{1} + A_{2}}) \\times A_{2}$</div><div>$A_{1}=a \\times t=" + (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10) + "\\times" + (parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) + "=" + a1 + "$</div><div>$A_{2}=(a-t)t=(" + (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10) + "-" + (parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) + ")" + (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10) + "=" + a2 + "$</div><div>$\\therefore A_{net}=" + aNet + "$</div>"; }
+        else {
+           var a1 = ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)-(parseFloat(bolts)+0.2)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+            var a2 = (((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)-(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10))*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+            aNet = (parseFloat(a1) + (3*parseFloat(a1) / (3*parseFloat(a1) + parseFloat(a2))) * parseFloat(a2)).toFixed(3);
+             math = "<div>$\\because connection\\hspace{0.2cm}is\\hspace{0.2cm}bolted\\hspace{0.2cm}and\\hspace{0.2cm}shape\\hspace{0.2cm}is\\hspace{0.2cm}one\\hspace{0.2cm}angle$</div><div>$\\therefore A_{net}=A_{1}+(\\frac{3\\times A_{1}}{3 \\times A_{1} + A_{2}}) \\times A_{2}$</div><div>$A_{1}=a \\times t - n (\\phi + 0.2)t="+ (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10) + "\\times" + (parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) + "-(" + (bolts) + "+0.2)" + (parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) + "=" + a1 + "$</div><div>$A_{2}=(a-t)t=(" + (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10) + "-" + (parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) + ")" + (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10) + "=" + a2 + "$</div><div>$\\therefore A_{net}=" + aNet + "$</div>" 
+        }
+    }
+
+    else {
+        aNet = 2 * parseFloat(primarySection.area);
+        math = "<div>$\\because\\hspace{0.2cm}shape\\hspace{0.2cm}is\\hspace{0.2cm}two\\hspace{0.2cm}angle\\hspace{0.2cm}or\\hspace{0.2cm}star$</div><div>$\\therefore A_{net}=2A=2\\times" + primarySection.area + "=" + aNet + "$</div>"; }
+    
+    math += "<div>$\\sigma_{c}";
+    var miniCase = 1;
+    if (ca == 2) { math+= "\\times 1.2"; miniCase = 1.2;}
+    math+= "\\geqslant \\frac{d.f.}{A_{net}} \\rightarrow";
+    math += sigmac;
+    if (ca == 2) { math += "\\times 1.2"; }
+    math+= "\\geqslant \\frac{" + df + "}{" + aNet + "}\\hspace{0.5cm}";
+    if (sigmac * miniCase >= (parseFloat(df)/parseFloat(aNet))) { math += "O.K.$</div>"; }
+    else {
+        while (sigmac * miniCase < (parseFloat(df)/parseFloat(aNet))) {
+            var rsec = refind(aPrimary);
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            
+            if (shape !== "one angle") {
+                aNet = 2*parseFloat(primarySection.area);
+            }
+            else if (connection === "bolted" && shape === "one angle") {
+            var a1 = ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)-(parseFloat(bolts)+0.2)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+            var a2 = (((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)-(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10))*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+            aNet = (parseFloat(a1) + (3*parseFloat(a1) / (3*parseFloat(a1) + parseFloat(a2))) * parseFloat(a2)).toFixed(3);
+            }
+            else {
+                var a1 = ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3);
+
+                var a2 = (((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10)-(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10))*(parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10)).toFixed(3); 
+
+                aNet = (parseFloat(a1) + (3*parseFloat(a1) / (3*parseFloat(a1) + parseFloat(a2))) * parseFloat(a2)).toFixed(3); 
+            }
+            math = "<div>$";
+            math += sigmac;
+            if (ca == 2) { math+= "\\times 1.2";}
+            math+= "\\geqslant \\frac{" + df + "}{" + aNet + "}\\hspace{0.5cm}"
+            if (sigmac * miniCase >= (parseFloat(df)/parseFloat(aNet))) { math+= "O.K.$</div>"; }
+        } 
+    }
+    $("#solution-text").append(math);
+    
+    if(connection === "bolted") {
+        $("#solution-text").append("<div>${3} - Construction:$</div>");
+        math = "<div>$a-t \\geqslant 3 \\times \\phi$</div><div>$" + parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 + "-" + parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10 + "\\geqslant" + "3 \\times " + bolts + "\\rightarrow "
+        if ( (parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= 3*parseFloat(bolts)) { math += "O.K.$<div>"}
+        else {
+            while ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) < 3*parseFloat(bolts)) {
+            var rsec = refind(aPrimary);
+            if (rsec === -1) { return -1; }
+            primarySection = rsec[0]; aPrimary = rsec[0].area ; math+= rsec[1];
+            $("#solution-text").append(math);
+            math = "<div>$a-t \\geqslant \\phi$</div><div>$" + parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 + "-" + parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10 + "\\geqslant" + 3*bolts + "\\rightarrow "
+            if ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= 3*parseFloat(bolts)) { math+= "O.K.$</div>"; }
+        }    
+        }
+    }
+ $("#solution-text").append(math);   
+ MathJax.Hub.Typeset();   
 }
 
 function findSection(a) {
