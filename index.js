@@ -382,8 +382,9 @@ function tension(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
             if ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= 3*parseFloat(bolts)) { math+= "O.K.$</div>"; }
         }    
         }
+        $("#solution-text").append(math);
     }
-    $("#solution-text").append(math);
+    
     MathJax.Hub.Typeset();
 }
 
@@ -635,8 +636,9 @@ function compression(df,sg,connection,bolts,shape,ca,lx,ly,tg) {
             if ((parseFloat(primarySection.angle.substr(0, primarySection.angle.indexOf("*")))/10 - parseFloat(primarySection.angle.substr(primarySection.angle.indexOf("*")+1))/10) >= 3*parseFloat(bolts)) { math+= "O.K.$</div>"; }
         }    
         }
+    $("#solution-text").append(math);  
     }
- $("#solution-text").append(math);   
+ 
  MathJax.Hub.Typeset();   
 }
 
