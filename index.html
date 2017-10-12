@@ -1,106 +1,105 @@
 <!DOCTYPE HTML>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Steel design app</title>
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-        <script type="text/x-mathjax-config">
-        MathJax.Hub.Config({
-        tex2jax: {inlineMath: [['$','$']]},
-        CommonHTML: { scale: 130 },
-        displayAlign: "left",
-        showMathMenu: false})</script>
-        <script src="index.js"></script>
-        <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
-        <link rel="stylesheet" href="index.css">
-    </head>
-    <body>
-        <div id="input">
-            <form autocomplete="off">
-                <fieldset form="input" class="form-group">
-                <legend class="control-label">Design procedure:
-                    <select id="main-selector" class="form-control">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Steel design app</title>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$']]}, CommonHTML: { scale: 130 }, displayAlign: "left", showMathMenu: false})</script>
+  <script src="index.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  <div id="input">
+    <form autocomplete="off">
+      <fieldset form="input" class="form-group">
+        <legend class="control-label">Design procedure:
+          <select id="main-selector" class="form-control">
                         <option value="tension" selected>Tension member</option>
                         <option value="compression">Compression member </option>
                         <option value="purlin" disabled>Purlin -in Development-</option>
                         <option value="column" disabled>Column -in Development-</option>
                     </select>
-                </legend>
-                    <div class="form-group row">
-                        <label class="col-xs-3 control-label fix-label" for="df">Design force(ton):</label>
-                        <div class="col-xs-2">
-                        <input class="form-control validate" type="text" id="df">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label id="grade-label" class="col-xs-3 control-label fix-label" for="steel-grade">Steel grade:</label>
-                        <div class="col-xs-3">
-                        <select class="form-control" id="steel-grade">
+        </legend>
+        <div class="form-group row">
+          <label class="col-xs-3 control-label fix-label" for="df">Design force(ton):</label>
+          <div class="col-xs-2">
+            <input class="form-control validate" type="text" id="df">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label id="grade-label" class="col-xs-3 control-label fix-label" for="steel-grade">Steel grade:</label>
+          <div class="col-xs-3">
+            <select class="form-control" id="steel-grade">
                             <option value="37" selected>St. 37</option>
                             <option value="44">St. 44</option>
                             <option value="52">St. 52</option>
                         </select>
-                        </div>
-                    </div>
-                    <div class="form-group row" id="connection">
-                        <div class="col-xs-6">
-                        <label class="control-label">Connection:</label>
-                        <input type="radio" id="welded" value="welded" name="connection-radio" checked="checked">
-                        <label class="radio-margin" for="welded">Welded</label>
-                        <input type="radio" id="bolted" value="bolted" name="connection-radio">
-                        <label for="bolted">Bolted</label>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                    <label id="shape-label" class="control-label col-xs-3 fix-label" for="member-shape">Member shape:</label>
-                        <div class="col-xs-3">
-                        <select class="form-control" id="member-shape">
+          </div>
+        </div>
+        <div class="form-group row" id="connection">
+          <div class="col-xs-6">
+            <label class="control-label">Connection:</label>
+            <input type="radio" id="welded" value="welded" name="connection-radio" checked="checked">
+            <label class="radio-margin" for="welded">Welded</label>
+            <input type="radio" id="bolted" value="bolted" name="connection-radio">
+            <label for="bolted">Bolted</label>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label id="shape-label" class="control-label col-xs-3 fix-label" for="member-shape">Member shape:</label>
+          <div class="col-xs-3">
+            <select class="form-control" id="member-shape">
                             <option value="one angle">one angle</option>
                             <option value="two angle">two angles</option>
                             <option value="star">star</option>
                         </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label radio-margin">Loading case:</label>
-                        <input type="radio" id="case1" value="I" name="case-radio" checked="checked">
-                        <label class="radio-margin" for="case1">I</label>
-                        <input type="radio" id="case2" value="II" name="case-radio" checked="checked">
-                        <label for="case2">II</label>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-xs-1 control-label fix-label ls-margin" for="lx">Lx(m):</label>
-                        <div class="col-xs-2">
-                        <input class="form-control validate" type="text" id="lx">
-                        </div>
-                        <label class="col-xs-1 control-label fix-label ls-margin" for="ly">Ly(m):</label>
-                        <div class="col-xs-2">
-                        <input class="form-control validate" type="text" id="ly">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label id="g-label" class="col-xs-4 control-label" for="tg">Gusset thickness(cm):</label>
-                        <div class="col-xs-2">
-                        <input class="form-control validate" type="text" id="tg">
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-default" id="btn-solve">Solve</button>
-                </fieldset>
-            </form> 
-            </div>
-        <div id="solution">
-            <p id="solution-head">Solution:</p>
-            <div id="solution-text">
-            </div>
+          </div>
         </div>
-        <div id="about">
-            <h2>About</h2>
-            <p>Created as a CS50x final project, "steelDesign" is based on the Egyptian code of practice for steel construction and bridges (ECP 205) and M.U.S.T's (Misr university for science and technology) CE403 course, It aims to help students solve problem sets by providing step-by-step solutions to several structural steel design problems, At the moment the website supports tension and compression members design using equal angles only, But will support purlins and columns design in the near future. Intended for academic use only.</p>
-            <p id="footer">by <a href="https://github.com/HosTilezZz">Ahmed Mudhar<img src="https://cdn4.iconfinder.com/data/icons/iconsimple-logotypes/512/github-512.png"></a>, 2017-2018</p>
+        <div class="form-group">
+          <label class="control-label radio-margin">Loading case:</label>
+          <input type="radio" id="case1" value="I" name="case-radio" checked="checked">
+          <label class="radio-margin" for="case1">I</label>
+          <input type="radio" id="case2" value="II" name="case-radio" checked="checked">
+          <label for="case2">II</label>
         </div>
-    </body>
+        <div class="form-group row">
+          <label class="col-xs-1 control-label fix-label ls-margin" for="lx">Lx(m):</label>
+          <div class="col-xs-2">
+            <input class="form-control validate" type="text" id="lx">
+          </div>
+          <label class="col-xs-1 control-label fix-label ls-margin" for="ly">Ly(m):</label>
+          <div class="col-xs-2">
+            <input class="form-control validate" type="text" id="ly">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label id="g-label" class="col-xs-4 control-label" for="tg">Gusset thickness(cm):</label>
+          <div class="col-xs-2">
+            <input class="form-control validate" type="text" id="tg">
+          </div>
+        </div>
+        <button type="button" class="btn btn-default" id="btn-solve">Solve</button>
+      </fieldset>
+    </form>
+  </div>
+  <div id="solution">
+    <p id="solution-head">Solution:</p>
+    <div id="solution-text">
+    </div>
+  </div>
+  <div id="about">
+    <h2>About</h2>
+    <p>Created as a CS50x final project, "steelDesign" is based on the Egyptian code of practice for steel construction and bridges (ECP 205) and M.U.S.T's (Misr university for science and technology) CE403 course, It aims to help students solve problem sets by providing step-by-step solutions to several structural steel design problems, At the moment the website supports tension and compression members design using equal angles only, But will support purlins and columns design in the near future. Intended for academic use only.</p>
+    <p id="footer">by <a href="https://github.com/muubar">Ahmed Mudhar<img src="https://cdn4.iconfinder.com/data/icons/iconsimple-logotypes/512/github-512.png"></a>, 2017-2018</p>
+  </div>
+</body>
+
 </html>
